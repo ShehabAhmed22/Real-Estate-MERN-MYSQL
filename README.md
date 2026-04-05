@@ -2,7 +2,7 @@
 
 [![Backend](https://img.shields.io/badge/Backend-Node.js-green)](https://nodejs.org/)  
 [![Frontend](https://img.shields.io/badge/Frontend-React-blue)](https://reactjs.org/)  
-[![Database](https://img.shields.io/badge/Database-PostgreSQL-blueviolet)](https://www.postgresql.org/)  
+[![Database](https://img.shields.io/badge/Database-MYSQL-blueviolet)](https://www.SQL.org/)  
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 A **full-featured Real Estate platform** built with **Express.js + Prisma** (backend) and **React.js + Vite** (frontend) 🌐🚀  
@@ -41,7 +41,7 @@ _Built with ❤️ by [Shehab Elbana]_
 
 ### Backend
 - Node.js + Express.js  
-- Prisma ORM + PostgreSQL  
+- Prisma ORM + MYSQL  
 - JWT Authentication  
 - Bcrypt → password hashing  
 - Helmet + CORS + rate limiting → security  

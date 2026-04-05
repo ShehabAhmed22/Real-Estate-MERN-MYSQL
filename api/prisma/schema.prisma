@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── User ──────────────────────────────────────────────────────────────
+model User {
+  id         String      @id @default(uuid())
+  email      String      @unique
+  username   String      @unique
+  password   String
+  avatar     String?
+  createdAt  DateTime    @default(now())
+
+  posts      Post[]
+  savedPosts SavedPost[]
+  chats      UserChat[]
+  messages   Message[]   @relation("senderMessages")
+
+  @@map("user")
+}
+
+// ─── Post ──────────────────────────────────────────────────────────────
+model Post {
+  id         String      @id @default(uuid())
+  title      String
+  price      Float
+  images     Json
+  address    String
+  city       String
+  bedroom    Int
+  bathroom   Int
+  latitude   Float
+  longitude  Float
+  type       Type
+  property   Property
+  createdAt  DateTime    @default(now())
+
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String
+
+  postDetail PostDetail?
+  savedPosts SavedPost[]
+
+  @@map("posts")
+}
+
+// ─── PostDetail ────────────────────────────────────────────────────────
+model PostDetail {
+  id         String  @id @default(uuid())
+  desc       String  @db.Text
+  utilities  String?
+  pet        String?
+  income     String?
+  size       Float?
+  school     Float?
+  bus        Float?
+  restaurant Float?
+
+  post       Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     String  @unique
+
+  @@map("postDetail")
+}
+
+// ─── SavedPost ─────────────────────────────────────────────────────────
+model SavedPost {
+  id        String   @id @default(uuid())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@map("savedPost")
+}
+
+// ─── Chat ──────────────────────────────────────────────────────────────
+model Chat {
+  id          String     @id @default(uuid())
+  createdAt   DateTime   @default(now())
+  lastMessage String?
+
+  seenBy      ChatSeen[]
+  messages    Message[]
+  users       UserChat[]
+
+  @@map("chat")
+}
+
+// ─── ChatSeen (replaces String[] seenBy — MySQL has no array type) ─────
+model ChatSeen {
+  id     String @id @default(uuid())
+
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId String
+
+  userId String
+
+  @@unique([chatId, userId])
+  @@map("chatSeen")
+}
+
+// ─── UserChat ──────────────────────────────────────────────────────────
+model UserChat {
+  id      String @id @default(uuid())
+
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+
+  chat    Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId  String
+
+  @@unique([userId, chatId])
+  @@map("userChat")
+}
+
+// ─── Message ───────────────────────────────────────────────────────────
+model Message {
+  id        String   @id @default(uuid())
+  text      String   @db.Text
+
+  sender    User     @relation("senderMessages", fields: [senderId], references: [id])
+  senderId  String
+
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId    String
+
+  createdAt DateTime @default(now())
+
+  @@map("message")
+}
+
+// ─── Enums ─────────────────────────────────────────────────────────────
+enum Type {
+  buy
+  rent
+}
+
+enum Property {
+  apartment
+  house
+  condo
+  land
+}
